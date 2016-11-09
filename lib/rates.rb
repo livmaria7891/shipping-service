@@ -1,21 +1,28 @@
 class Rates
+
+  attr_accessor :json
   def initialize(origin, destination, package)
     @origin = origin
     @destination = destination
     @package = package
 
+    @json = create_json
+    return @json
+
   end
 
   def get_ups_rates
-    ups = ActiveShipping::UPS.new(login: ENV['ACTIVESHIPPING_UPS_LOGIN'], password: ENV['ACTIVESHIPPING_UPS_PASSWORD'], key: 'ACTIVESHIPPING_UPS_KEY')
+    ###REAL
+    ups = ActiveShipping::UPS.new(login: ENV['ACTIVESHIPPING_UPS_LOGIN'], password: ENV['ACTIVESHIPPING_UPS_PASSWORD'], key: ENV['ACTIVESHIPPING_UPS_KEY'])
     response = ups.find_rates(@origin, @destination, @package)
 
     ups_json = jsonize(response)
+
     return ups_json
   end
 
   def get_usps_rates
-    usps = ActiveShipping::USPS.new(login: 'ACTIVESHIPPING_USPS_LOGIN')
+    usps = ActiveShipping::USPS.new(login: ENV['ACTIVESHIPPING_USPS_LOGIN'])
     response = usps.find_rates(@origin, @destination, @package)
 
     usps_json = jsonize(response)
@@ -32,12 +39,14 @@ class Rates
 
   def jsonize(response)
     jsonized = []
-    response.each do |rate|
-      jsonized[rate[0]] = rate[1]
+    response.rates.each do |rate|
+      jsonized << {carrier: rate.carrier, service_name: rate.service_name, rate: rate.total_price}
     end
+    return jsonized
   end
 
   def create_json
+    # results = [get_ups_rates, get_usps_rates].flatten
     results = [get_ups_rates, get_usps_rates].flatten
 
     return results
