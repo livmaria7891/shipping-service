@@ -37,6 +37,13 @@ gem 'active_shipping'
 
 gem 'zip-codes'
 
+group :test do
+  gem 'better_errors'
+  gem 'awesome_print'
+  gem 'minitest-reporters'
+  gem 'simplecov'
+end
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
