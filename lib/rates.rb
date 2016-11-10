@@ -2,6 +2,7 @@ class Rates
 
   attr_accessor :json
   def initialize(origin, destination, package)
+
     @origin = origin
     @destination = destination
     @package = package
